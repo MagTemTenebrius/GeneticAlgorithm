@@ -1,0 +1,19 @@
+{
+  "cab": [
+    {
+      "name": "A-1",
+      "type": null,
+      "count": 100
+    },
+    {
+      "name": "A-2",
+      "type": null,
+      "count": 100
+    },
+    {
+      "name": "A-3",
+      "type": "computer",
+      "count": 100
+    }
+  ]
+}

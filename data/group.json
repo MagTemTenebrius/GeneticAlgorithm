@@ -1,0 +1,37 @@
+{
+  "МК-101": {
+    "object": [
+      {
+        "name": "информатика",
+        "count": 2,
+        "cab": "computer"
+      },
+      {
+        "name": "русский",
+        "count": 2,
+        "cab": null,
+        "parallel": true
+      },
+      {
+        "name": "русский-практика",
+        "count": 2,
+        "cab": null,
+        "parallel": true
+      }
+    ]
+  },
+  "МК-102": {
+    "object": [
+      {
+        "name": "информатика",
+        "count": 2,
+        "cab": "computer"
+      },
+      {
+        "name": "русский",
+        "count": 2,
+        "cab": null
+      }
+    ]
+  }
+}
