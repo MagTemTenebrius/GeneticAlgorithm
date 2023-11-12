@@ -1,391 +1,277 @@
-import copy
 import csv
-import json
-import os
 import random
-from datetime import datetime
-from random import sample
 
 
 class Group:
-    def __init__(self, group_id, name, students, mandatory_courses):
-        self.group_id = group_id
-        self.name = name if name is not None else group_id
-        self.students = students
-        self.schedule = []
-        self.mandatory_courses = mandatory_courses  # Список обязательных предметов
-
-
-class Instructor:
-    def __init__(self, instructor_id, name, courses_taught):
-        self.instructor_id = instructor_id
+    def __init__(self, name):
         self.name = name
-        self.courses_taught = courses_taught
-        self.schedule = []
 
-    def get_courses_taught(self):
-        return self.courses_taught
+
+class Teacher:
+    def __init__(self, name):
+        self.name = name
+
+
+class Course:
+    def __init__(self, name, teacher, groups, lessons_per_week):
+        self.name = name
+        self.teacher = teacher
+        self.groups = groups
+        self.lessons_per_week = lessons_per_week
+
+
+class TimeSlot:
+    def __init__(self, day, time, is_morning):
+        self.day = day
+        self.time = time
+        self.is_morning = is_morning
 
 
 class Classroom:
-    def __init__(self, classroom_id, name, capacity, availability):
-        self.classroom_id = classroom_id
+    def __init__(self, name):
         self.name = name
-        self.capacity = capacity
-        self.availability = availability
-
-
-class Lecture:
-    def __init__(self, lecture_id, course, group, instructor, classroom, start_time, end_time, day_of_week=None):
-        self.lecture_id = lecture_id
-        self.course = course
-        self.group = group
-        self.instructor = instructor
-        self.classroom = classroom
-        self.start_time = start_time
-        self.end_time = end_time
-        self.day_of_week = day_of_week
-
-
-class Schedule:
-    def __init__(self, schedule_id, name):
-        self.schedule_id = schedule_id
-        self.name = name
-        self.groups = []
-        self.instructors = []
-        self.courses = []
-        self.classrooms = []
-        self.lectures = []
-
-    def add_group(self, group):
-        self.groups.append(group)
-
-    def add_instructor(self, instructor):
-        self.instructors.append(instructor)
-
-    def add_course(self, course):
-        self.courses.append(course)
-
-    def get_instructor(self):
-        return self.instructors
-
-    def add_classroom(self, classroom):
-        self.classrooms.append(classroom)
-
-    def add_lecture(self, lecture):
-        self.lectures.append(lecture)
-
-    def generate_random_schedule(self):
-        schedule = Schedule(None, None)
-        for group in self.groups:
-            for day_of_week in ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]:
-                for _ in range(4):
-                    course = random.choice([c for c in self.courses if c.name in group.mandatory_courses])
-                    instructor = random.choice(self.instructors)
-                    classroom = random.choice(self.classrooms)
-                    start_time, end_time = self.get_random_time()
-
-                    lecture = Lecture(course=course,
-                                      group=group,
-                                      instructor=instructor,
-                                      classroom=classroom,
-                                      day_of_week=day_of_week,
-                                      start_time=start_time,
-                                      end_time=end_time,
-                                      lecture_id="AAA")
-
-                    schedule.lectures.append(lecture)
-
-        return schedule
-
-    def get_random_time(self):
-        # Предполагается, что у вас есть некоторый список временных интервалов
-        timeslots = [("8:00 AM", "10:00 AM"), ("10:00 AM", "12:00 PM"), ("1:00 PM", "3:00 PM"), ("3:00 PM", "5:00 PM")]
-        return random.choice(timeslots)
-
-    def to_csv(self, output_folder='csv_output'):
-        if not os.path.exists(output_folder):
-            os.makedirs(output_folder)
-
-        # Создание CSV-файлов для каждой группы
-        for group in self.groups:
-            filename = f"{output_folder}/{group.name}_schedule.csv"
-
-            # Фильтрация занятий по группе
-            filtered_lectures = [lecture for lecture in self.lectures if lecture.group == group]
-
-            # Создание списка кортежей из отфильтрованных занятий
-            schedule_data = [
-                (
-                    lecture.lecture_id,
-                    lecture.course,
-                    lecture.group.name,
-                    lecture.instructor.name,
-                    lecture.classroom.name,
-                    lecture.day_of_week,
-                    lecture.start_time,
-                    lecture.end_time
-                )
-                for lecture in filtered_lectures
-            ]
-
-            # Сортировка по дню недели и времени
-            sorted_schedule = sorted(schedule_data, key=lambda x: (x[5], self.parse_time(x[6])))
-
-            # Создание CSV-файла
-            with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
-                fieldnames = ["lecture_id", "course", "group", "instructor", "classroom", "day_of_week", "start_time",
-                              "end_time"]
-                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-
-                writer.writeheader()
-
-                # Запись отсортированных данных в CSV
-                for lecture in sorted_schedule:
-                    writer.writerow({
-                        "lecture_id": lecture[0],
-                        "course": lecture[1],
-                        "group": lecture[2],
-                        "instructor": lecture[3],
-                        "classroom": lecture[4],
-                        "day_of_week": lecture[5],
-                        "start_time": lecture[6],
-                        "end_time": lecture[7]
-                    })
-
-    @staticmethod
-    def parse_time(time_str):
-        # Функция для извлечения времени из строки диапазона
-        if "-" in time_str:
-            start_str, end_str = map(str.strip, time_str.split("-"))
-            start_time = datetime.strptime(start_str, "%I:%M %p").time()
-            end_time = datetime.strptime(end_str, "%I:%M %p").time()
-            return f"{start_time} - {end_time}"
-        else:
-            return time_str
 
 
 class ScheduleGenerator:
-    def __init__(self, schedule):
-        self.schedule = schedule
-        self.population_size = 50
-        self.generations = 100
-        self.mutation_rate = 0.2
-        self.elite_percentage = 0.2
+    def __init__(self, courses, classrooms, timeslots):
+        self.courses = courses
+        self.classrooms = classrooms
+        self.timeslots = timeslots
+
+    def create_schedule(self, population_size):
+        population = []
+
+        for _ in range(population_size):
+            schedule = {}
+            for course in self.courses:
+                for group in course.groups:
+                    for _ in range(course.lessons_per_week):
+                        # Получаем утренний временной слот для конкретного дня
+                        morning_timeslots = [slot for slot in self.timeslots if slot.is_morning]
+                        timeslot = random.choice(morning_timeslots)
+
+                        lesson_key = f"{course.name}_{group.name}_{timeslot.day}_{timeslot.time}"
+                        if lesson_key not in schedule:
+                            schedule[lesson_key] = {
+                                'Teacher': course.teacher.name,
+                                'Classroom': random.choice(self.classrooms).name,
+                            }
+
+            population.append(schedule)
+
+        return population
 
     def fitness(self, schedule):
-        # Оценка приспособленности учитывает обязательные предметы для каждой группы
-        total_fitness = 0
+        conflicts = 0
+        lessons_info = {key: info for key, info in schedule.items() if isinstance(info, dict)}
 
-        for group in schedule.groups:
-            mandatory_courses = set(group.mandatory_courses)
-            scheduled_courses = set()
+        for lesson_key, info in lessons_info.items():
+            for other_lesson_key, other_info in lessons_info.items():
+                if lesson_key != other_lesson_key:
+                    if (info['Classroom'] == other_info['Classroom'] and
+                            info['Teacher'] == other_info['Teacher']):
+                        conflicts += 1
 
-            for lecture in schedule.lectures:
-                if lecture.group == group:
-                    scheduled_courses.add(lecture.course)
-
-            # Чем ближе запланированные курсы к обязательным, тем лучше
-            fitness_group = len(mandatory_courses.intersection(scheduled_courses))
-
-            total_fitness += fitness_group
-
-        return total_fitness
+        return 1 / (1 + conflicts)
 
     def crossover(self, parent1, parent2):
-        # Одноточечный кроссовер
-        crossover_point = random.randint(1, len(parent1.lectures) - 1)
-        child1 = copy.deepcopy(parent1)
-        child2 = copy.deepcopy(parent2)
+        crossover_point = random.randint(1, len(parent1) - 1)
+        child = {}
 
-        child1.lectures = parent1.lectures[:crossover_point] + parent2.lectures[crossover_point:]
-        child2.lectures = parent2.lectures[:crossover_point] + parent1.lectures[crossover_point:]
+        for lesson_key, info in parent1.items():
+            if lesson_key in parent2 and isinstance(info, dict):
+                child[lesson_key] = info
+            else:
+                child[lesson_key] = parent2.get(lesson_key, info)
 
-        return child1, child2
+        return child
 
-    def mutate(self, individual):
-        # Мутация: перемещение случайной лекции в другое время
-        mutated_individual = copy.deepcopy(individual)
-        lecture_to_mutate = random.choice(mutated_individual.lectures)
-        new_time = self.schedule.get_random_time()  # Предполагается, что есть метод get_random_time()
+    def mutate(self, schedule, mutation_rate=0.1):
+        for lesson_key, info in schedule.items():
+            if isinstance(info, dict) and random.random() < mutation_rate:
+                info['Classroom'] = random.choice(self.classrooms).name
+        return schedule
 
-        # Обновим время лекции
-        lecture_to_mutate.start_time = new_time[0]
-        lecture_to_mutate.end_time = new_time[1]
-
-        return mutated_individual
-
-    def evolve(self, population_size=100, generations=50):
-        # Генетическая эволюция для создания расписания
-        population = [self.schedule.generate_random_schedule() for _ in range(population_size)]
+    def genetic_algorithm(self, population_size, generations):
+        population = self.create_schedule(population_size)
 
         for generation in range(generations):
-            # Оценка приспособленности
-            fitness_scores = [(schedule, self.fitness(schedule)) for schedule in population]
+            population = sorted(population, key=lambda x: self.fitness(x), reverse=True)
 
-            # Сортировка по приспособленности (чем больше, тем лучше)
-            fitness_scores.sort(key=lambda x: x[1], reverse=True)
+            parents = population[:2]
 
-            # Отбор лучших особей
-            selected_population = [schedule for schedule, _ in fitness_scores[:int(population_size * 0.2)]]
+            offspring = [self.crossover(parents[0], parents[1]) for _ in range(population_size - 2)]
+            offspring = [self.mutate(child) for child in offspring]
 
-            # Создание нового поколения
-            new_population = selected_population[:]
+            population = parents + offspring
 
-            # Кроссовер
-            for _ in range(int(population_size * 0.6)):
-                parent1, parent2 = random.sample(selected_population, 2)
-                child1, child2 = self.crossover(parent1, parent2)
-                new_population.extend([child1, child2])
+            best_schedule = max(population, key=lambda x: self.fitness(x))
+            print(f"Generation {generation + 1}, Fitness: {self.fitness(best_schedule)}")
 
-            # Мутация
-            for _ in range(int(population_size * 0.2)):
-                individual_to_mutate = random.choice(new_population)
-                mutated_individual = self.mutate(individual_to_mutate)
-                new_population.append(mutated_individual)
-
-            population = new_population
-
-        # Возврат лучшего расписания
-        best_schedule = max(population, key=self.fitness)
         return best_schedule
 
 
-def generate_schedule():
-    # Генерация фиктивных данных
-    group1 = Group("МК101", None, 30, ["Системное программирование 1", "Защита кода", "Геометрия"])
-    group2 = Group("МК102", None, 25, ["Системное программирование 1", "Защита кода", "Геометрия"])
-    group3 = Group("МК201", None, 25, ["Системное программирование 1", "Защита кода", "Геометрия"])
-    group4 = Group("МК202", None, 25, ["Системное программирование 1", "Защита кода", "Геометрия"])
-    group5 = Group("МК203", None, 25, ["Системное программирование 1", "Защита кода", "Геометрия"])
-    group6 = Group("МК301", None, 25, ["Системное программирование 1", "Защита кода", "Геометрия"])
-    group7 = Group("МК401", None, 25, ["Системное программирование 1", "Защита кода", "Геометрия"])
-    group8 = Group("МК501", None, 25, ["Системное программирование 1", "Защита кода", "Геометрия"])
-    group9 = Group("МК601", None, 25, ["Системное программирование 1", "Защита кода", "Геометрия"])
+# Создаем группы
+group101 = Group("МК-101")
+group102 = Group("МК-102")
+group201 = Group("МК-201")
+group301 = Group("МК-301")
+group401 = Group("МК-401")
+group501 = Group("МК-501")
 
-    instructor1 = Instructor("I001", "Маткин Илья Александрович", [
-        "Системное программирование 1",
-        "Системное программирование 2",
-        "Защита кода"
-        "Валуны 1",
-        "Валуны 2"])
-    instructor2 = Instructor("I002", "Сбродовав Елена Васильевна", [
-        "Геометрия"
-    ])
-    instructor3 = Instructor("I003", "Шалагинов Леонид Викторович", [
-        "Теория графов 1",
-        "Теория графов 2",
-        "Теория чисел"
-    ])
-    instructor4 = Instructor("I004", "Панов А. В.", [
-        "Мат. анализ"
-    ])
-    instructor5 = Instructor("I005", "Ручай Алексей Николаевич", [
-        "Нейронные сети 1",
-        "Нейронные сети 2"
-    ])
-    instructor6 = Instructor("I006", "Ручай Алексей Николаевич", [
-        "Нейронные сети 1",
-        "Нейронные сети 2"
-    ])
-    instructor7 = Instructor("I007", "Тарелкин Борис", [
-        "Java 1",
-        "Java 2"
-    ])
+# Создаем преподавателей
+teacher1 = Teacher("Маткин И.А.")
+teacher2 = Teacher("Ручай А.Н.")
+teacher3 = Teacher("Сбродова Е.В.")
+teacher4 = Teacher("Шалагинов Л.В.")
+teacher5 = Teacher("Иванов А.А.")
+teacher6 = Teacher("Светлов А.А.")
+teacher7 = Teacher("Светлов А.Б.")
 
-    classroom1 = Classroom("C101", "Room 421", 50, {
-        "Monday": ["8:00 AM - 10:00 AM", "1:00 PM - 12:00 PM"],
-        "Tuesday": ["8:00 AM - 10:00 AM", "1:00 PM - 3:00 PM"],
-        "Wednesday": ["8:00 AM - 10:00 AM", "1:00 PM - 3:00 PM"],
-        "Thursday": ["8:00 AM - 10:00 AM", "1:00 PM - 3:00 PM"],
-        "Friday": ["8:00 AM - 10:00 AM", "1:00 PM - 3:00 PM"]
-    })
+# Создаем курсы
+course1 = Course("Геометрия", teacher3, [group101, group102], 2)
+course2 = Course("Физическая Культура Теория", teacher5, [group101, group102, group201, group301], 3)
+course3 = Course("Искусственный Интеллект", teacher2, [group401, group501], 2)
+course4 = Course("Системное программирование", teacher1, [group301, group401], 2)
+course5 = Course("Защита кода", teacher1, [group501], 2)
+course6 = Course("Теория чисел", teacher4, [group201], 2)
+course7 = Course("Математический анализ", teacher6, [group101, group102, group201], 2)
+course8 = Course("Математический анализ 2", teacher7, [group301, group401, group501], 2)
 
-    classroom2 = Classroom("C102", "Room 423", 40, {
-        "Monday": ["10:00 AM - 12:00 PM", "3:00 PM - 5:00 PM"],
-        "Tuesday": ["10:00 AM - 12:00 PM"],
-        "Wednesday": ["10:00 AM - 12:00 PM", "3:00 PM - 5:00 PM"],
-        "Thursday": ["10:00 AM - 12:00 PM"],
-        "Friday": ["10:00 AM - 12:00 PM", "3:00 PM - 5:00 PM"]
-    })
+# Создаем аудитории
+classroom1 = Classroom("401")
+classroom2 = Classroom("402")
+classroom3 = Classroom("403")
+classroom4 = Classroom("404")
+classroom5 = Classroom("405")
+classroom6 = Classroom("406")
 
-    classroom3 = Classroom("C102", "Room 401", 40, {
-        "Monday": ["10:00 AM - 12:00 PM", "3:00 PM - 5:00 PM"],
-        "Tuesday": ["10:00 AM - 12:00 PM"],
-        "Wednesday": ["10:00 AM - 12:00 PM", "3:00 PM - 5:00 PM"],
-        "Thursday": ["10:00 AM - 12:00 PM"],
-        "Friday": ["10:00 AM - 12:00 PM", "3:00 PM - 5:00 PM"]
-    })
+# Создаем временные слоты
+days_of_week = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
+timeslots = []
+for day in days_of_week:
+    for hour in range(8, 18, 2):
+        timeslots.append(TimeSlot(day, f"{hour:02d}:00", hour <= 12))
 
-    classroom4 = Classroom("C102", "Room 402", 40, {
-        "Monday": ["10:00 AM - 12:00 PM", "3:00 PM - 5:00 PM"],
-        "Tuesday": ["10:00 AM - 12:00 PM"],
-        "Wednesday": ["10:00 AM - 12:00 PM", "3:00 PM - 5:00 PM"],
-        "Thursday": ["10:00 AM - 12:00 PM"],
-        "Friday": ["10:00 AM - 12:00 PM", "3:00 PM - 5:00 PM"]
-    })
+# Создаем генератор расписания
+schedule_generator = ScheduleGenerator(courses=[course1, course2, course3, course4, course5, course6, course7, course8],
+                                       classrooms=[classroom1, classroom2, classroom3, classroom4, classroom5,
+                                                   classroom6],
+                                       timeslots=timeslots)
 
-    classroom5 = Classroom("C102", "Room 403", 40, {
-        "Monday": ["10:00 AM - 12:00 PM", "3:00 PM - 5:00 PM"],
-        "Tuesday": ["10:00 AM - 12:00 PM"],
-        "Wednesday": ["10:00 AM - 12:00 PM", "3:00 PM - 5:00 PM"],
-        "Thursday": ["10:00 AM - 12:00 PM"],
-        "Friday": ["10:00 AM - 12:00 PM", "3:00 PM - 5:00 PM"]
-    })
+# Запуск генетического алгоритма
+best_schedule = schedule_generator.genetic_algorithm(population_size=20, generations=100)
 
-    # Создание расписания
-    schedule = Schedule("S001", "Fall 2023 Schedule")
-    schedule.add_group(group1)
-    schedule.add_group(group2)
-    schedule.add_group(group3)
-    schedule.add_group(group4)
-    schedule.add_group(group5)
-    schedule.add_group(group6)
-    schedule.add_group(group7)
-    schedule.add_group(group8)
-    schedule.add_group(group9)
-
-    schedule.add_instructor(instructor1)
-    schedule.add_instructor(instructor2)
-    schedule.add_instructor(instructor3)
-    schedule.add_instructor(instructor4)
-    schedule.add_instructor(instructor5)
-    schedule.add_instructor(instructor6)
-    schedule.add_instructor(instructor7)
-
-    schedule.add_classroom(classroom1)
-    schedule.add_classroom(classroom2)
-    schedule.add_classroom(classroom3)
-    schedule.add_classroom(classroom4)
-    schedule.add_classroom(classroom5)
-
-    # Генерация занятий
-    courses = []
-    for teacher in schedule.get_instructor():
-        courses += teacher.get_courses_taught()
-
-    for group in schedule.groups:
-        for course in courses:
-            instructor = sample(schedule.instructors, 1)[0]
-            classroom = sample(schedule.classrooms, 1)[0]
-            start_time = sample(classroom.availability["Monday"], 1)[0]
-            end_time = start_time.split(" - ")[1]
-
-            lecture = Lecture(f"L{len(schedule.lectures) + 1}", course, group, instructor, classroom, start_time,
-                              end_time)
-            schedule.add_lecture(lecture)
-
-    # Вывод данных в JSON
-    # schedule_json = json.dumps(schedule.__dict__, default=lambda x: x.__dict__, indent=2)
-    # print(schedule_json)
-    return schedule
+# Вывод лучшего расписания
+print("\nBest Schedule:")
+for lesson_key, info in best_schedule.items():
+    if isinstance(info, dict):
+        print(f"{lesson_key}: {info}")
 
 
-if __name__ == "__main__":
-    generator = ScheduleGenerator(generate_schedule())
-    best_schedule = generator.evolve()
-    best_schedule.to_csv()
+# Функция для записи расписания в CSV-файл
+def write_schedule_to_csv(schedule, output_file):
+    groups = {}
+    teacher = {}
+    with open(output_file, mode='w', newline='', encoding='utf-8') as csv_file:
+        writer = csv.writer(csv_file)
 
-    # Вывод результатов
-    best_schedule_json = json.dumps(best_schedule.__dict__, ensure_ascii=False, default=lambda x: x.__dict__, indent=2)
-    print(best_schedule_json)
+        # Записываем заголовок
+        header = ['Day', 'Time', 'Classroom', 'Teacher', 'Course', 'Group']
+        writer.writerow(header)
+
+        # Группируем уроки по дням недели
+        grouped_schedule = {}
+        for lesson_key, info in schedule.items():
+            if isinstance(info, dict):
+                day, time = lesson_key.split("_")[-2:]
+                if day not in grouped_schedule:
+                    grouped_schedule[day] = []
+                grouped_schedule[day].append(
+                    [day, time, info['Classroom'], info['Teacher'], lesson_key.split("_")[0], lesson_key.split("_")[1]])
+
+                if lesson_key.split("_")[1] not in groups.keys():
+                    groups[lesson_key.split("_")[1]] = []
+                groups[lesson_key.split("_")[1]].append(
+                    {
+                        "Day": day,
+                        "Time": time,
+                        "Classroom": info['Classroom'],
+                        "Teacher": info['Teacher'],
+                        "Course": lesson_key.split("_")[0]
+                    }
+                )
+
+                if info['Teacher'] not in teacher.keys():
+                    teacher[info['Teacher']] = []
+                teacher[info['Teacher']].append(
+                    {
+                        "Day": day,
+                        "Time": time,
+                        "Classroom": info['Classroom'],
+                        "Group": lesson_key.split("_")[1],
+                        "Course": lesson_key.split("_")[0]
+                    }
+                )
+
+        # Записываем данные в CSV
+        for day, lessons in grouped_schedule.items():
+            for lesson in lessons:
+                writer.writerow(lesson)
+
+    grouped_schedule = {}
+    for groupName, data_ in groups.items():
+        if groupName not in grouped_schedule.keys():
+            grouped_schedule[groupName] = {}
+        for data in data_:
+            if data["Day"] not in grouped_schedule[groupName].keys():
+                grouped_schedule[groupName][data["Day"]] = []
+            grouped_schedule[groupName][data["Day"]].append(
+                [data["Time"], data['Classroom'], data['Teacher'], data['Course']])
+
+    for groupName in grouped_schedule.keys():
+        with open(groupName + ".csv", mode='w', newline='', encoding='utf-8') as csv_file:
+            writer = csv.writer(csv_file)
+            header = ['Day', 'Time', 'Classroom', 'Teacher', 'Course']
+            writer.writerow(header)
+            for day in grouped_schedule[groupName].keys():
+                for element in grouped_schedule[groupName][day]:
+                    writer.writerow(
+                        (day,
+                        element[0],
+                        element[1],
+                        element[2],
+                        element[3])
+                    )
+
+    teachered_schedule = {}
+    for teacherName, data_ in teacher.items():
+        if teacherName not in teachered_schedule.keys():
+            teachered_schedule[teacherName] = {}
+        for data in data_:
+            if data["Day"] not in teachered_schedule[teacherName].keys():
+                teachered_schedule[teacherName][data["Day"]] = []
+            teachered_schedule[teacherName][data["Day"]].append(
+                [data["Time"], data['Classroom'], data['Group'], data['Course']])
+
+    for teacherName in teachered_schedule.keys():
+        with open(teacherName + ".csv", mode='w', newline='', encoding='utf-8') as csv_file:
+            writer = csv.writer(csv_file)
+            header = ['Day', 'Time', 'Classroom', 'Group', 'Course']
+            writer.writerow(header)
+            for day in teachered_schedule[teacherName].keys():
+                for element in teachered_schedule[teacherName][day]:
+                    writer.writerow(
+                        (day,
+                        element[0],
+                        element[1],
+                        element[2],
+                        element[3])
+                    )
+
+
+
+# Записываем лучшее расписание в CSV-файл
+output_file_path = 'schedule.csv'
+write_schedule_to_csv(best_schedule, output_file_path)
+print(f"Schedule written to {output_file_path}")
