@@ -1,39 +1,58 @@
 Day,Time,Classroom,Teacher,Course,Group
-Thursday,12:00,402,Сбродова Е.В.,Геометрия,МК-101
-Thursday,10:00,406,Сбродова Е.В.,Геометрия,МК-101
-Thursday,10:00,402,Иванов А.А.,Физическая Культура Теория,МК-101
-Thursday,12:00,401,Иванов А.А.,Физическая Культура Теория,МК-201
-Thursday,08:00,402,Иванов А.А.,Физическая Культура Теория,МК-301
-Thursday,12:00,406,Светлов А.А.,Математический анализ,МК-201
-Thursday,10:00,405,Светлов А.А.,Математический анализ,МК-201
-Monday,10:00,401,Сбродова Е.В.,Геометрия,МК-102
-Monday,12:00,403,Иванов А.А.,Физическая Культура Теория,МК-301
-Monday,08:00,404,Маткин И.А.,Системное программирование,МК-401
-Monday,08:00,406,Маткин И.А.,Защита кода,МК-501
-Monday,12:00,403,Светлов А.А.,Математический анализ,МК-101
-Monday,08:00,402,Светлов А.А.,Математический анализ,МК-102
-Monday,12:00,404,Светлов А.А.,Математический анализ,МК-102
-Monday,08:00,406,Светлов А.Б.,Математический анализ 2,МК-401
-Friday,10:00,403,Сбродова Е.В.,Геометрия,МК-102
-Friday,08:00,403,Иванов А.А.,Физическая Культура Теория,МК-102
-Friday,12:00,401,Ручай А.Н.,Искусственный Интеллект,МК-401
-Friday,08:00,402,Маткин И.А.,Системное программирование,МК-301
-Friday,10:00,401,Шалагинов Л.В.,Теория чисел,МК-201
-Friday,12:00,402,Светлов А.Б.,Математический анализ 2,МК-301
-Friday,12:00,402,Светлов А.Б.,Математический анализ 2,МК-501
-Tuesday,10:00,403,Иванов А.А.,Физическая Культура Теория,МК-101
-Tuesday,08:00,403,Иванов А.А.,Физическая Культура Теория,МК-101
-Tuesday,08:00,402,Ручай А.Н.,Искусственный Интеллект,МК-401
-Tuesday,10:00,405,Ручай А.Н.,Искусственный Интеллект,МК-501
-Tuesday,08:00,402,Маткин И.А.,Системное программирование,МК-401
-Tuesday,10:00,404,Светлов А.А.,Математический анализ,МК-101
-Tuesday,08:00,402,Светлов А.Б.,Математический анализ 2,МК-501
-Wednesday,12:00,404,Иванов А.А.,Физическая Культура Теория,МК-102
-Wednesday,12:00,401,Иванов А.А.,Физическая Культура Теория,МК-201
-Wednesday,08:00,403,Иванов А.А.,Физическая Культура Теория,МК-201
-Wednesday,12:00,403,Иванов А.А.,Физическая Культура Теория,МК-301
-Wednesday,12:00,401,Ручай А.Н.,Искусственный Интеллект,МК-501
-Wednesday,12:00,404,Маткин И.А.,Системное программирование,МК-301
-Wednesday,12:00,402,Шалагинов Л.В.,Теория чисел,МК-201
-Wednesday,08:00,404,Светлов А.Б.,Математический анализ 2,МК-301
-Wednesday,08:00,401,Светлов А.Б.,Математический анализ 2,МК-401
+Friday,08:00,Njylev,Ljadbs,Cejvzv,Gerpag
+Friday,10:00,Ntdvbh,Ljadbs,Cejvzv,Gerpag
+Friday,10:00,Ntdvbh,Ljadbs,Cejvzv,Gbabua
+Friday,08:00,Ntdofe,Lspyfj,Cdmtet,Gerpag
+Friday,10:00,Neerve,Lspyfj,Cdmtet,Gyrqrr
+Friday,08:00,Ntdofe,Lspyfj,Cdhhsb,Gfkjgd
+Friday,08:00,Ntdvbh,Luxbqt,Celnuu,Gfkjgd
+Friday,12:00,Neerve,Luxbqt,Celnuu,Gbabua
+Friday,10:00,Ngfvbk,Lspyfj,Cgjayw,Gbabua
+Friday,08:00,Ntdvbh,Lfoudh,Ccqkqd,Gerpag
+Friday,10:00,Ntdvbh,Lfoudh,Cvqycu,Gfkjgd
+Monday,10:00,Ngfvbk,Ljadbs,Cejvzv,Gerpag
+Monday,10:00,Ntdofe,Ljadbs,Cejvzv,Glammu
+Monday,12:00,Neerve,Ljadbs,Cejvzv,Glammu
+Monday,08:00,Ntdvbh,Lspyfj,Cdmtet,Glammu
+Monday,10:00,Ntdofe,Lspyfj,Cdmtet,Gbabua
+Monday,12:00,Ngfvbk,Lfoudh,Cqdhfa,Gbabua
+Monday,10:00,Ngfvbk,Lfoudh,Cqdhfa,Gbabua
+Monday,08:00,Ngfvbk,Lspyfj,Cgjayw,Gbabua
+Monday,10:00,Ntdofe,Lspyfj,Cgjayw,Glammu
+Monday,08:00,Ntdvbh,Lfoudh,Ccqkqd,Gerpag
+Tuesday,08:00,Njylev,Ljadbs,Cejvzv,Gyrqrr
+Tuesday,12:00,Neerve,Lspyfj,Cdmtet,Glammu
+Tuesday,10:00,Ntdofe,Lfoudh,Cqdhfa,Gyrqrr
+Tuesday,08:00,Njylev,Lfoudh,Cqdhfa,Gfkjgd
+Tuesday,08:00,Neerve,Lspyfj,Cibdfp,Glammu
+Tuesday,08:00,Ngfvbk,Lspyfj,Cibdfp,Gyrqrr
+Tuesday,12:00,Ngfvbk,Lspyfj,Cibdfp,Gyrqrr
+Tuesday,12:00,Neerve,Luxbqt,Celnuu,Gyrqrr
+Tuesday,10:00,Njylev,Lspyfj,Cgjayw,Gyrqrr
+Tuesday,10:00,Ntdvbh,Lspyfj,Cgjayw,Glammu
+Tuesday,10:00,Ntdvbh,Lfoudh,Ccqkqd,Gbabua
+Tuesday,12:00,Neerve,Lfoudh,Ccqkqd,Gbabua
+Tuesday,08:00,Ntdofe,Lfoudh,Cvqycu,Gyrqrr
+Wednesday,08:00,Ntdvbh,Ljadbs,Cejvzv,Gyrqrr
+Wednesday,08:00,Ntdvbh,Ljadbs,Cejvzv,Gbabua
+Wednesday,10:00,Ntdofe,Lspyfj,Cdmtet,Gyrqrr
+Wednesday,08:00,Ngfvbk,Lspyfj,Cdmtet,Gyrqrr
+Wednesday,08:00,Ngfvbk,Lspyfj,Cdmtet,Gbabua
+Wednesday,12:00,Ngfvbk,Lfoudh,Cqdhfa,Gyrqrr
+Wednesday,10:00,Ntdofe,Luxbqt,Celnuu,Glammu
+Wednesday,10:00,Ntdvbh,Lspyfj,Cgjayw,Gyrqrr
+Wednesday,12:00,Ngfvbk,Lspyfj,Cgjayw,Gbabua
+Wednesday,10:00,Neerve,Lspyfj,Cgjayw,Glammu
+Wednesday,10:00,Ntdofe,Lfoudh,Ccqkqd,Gbabua
+Wednesday,08:00,Ntdofe,Lfoudh,Ccqkqd,Gerpag
+Wednesday,10:00,Ntdvbh,Lfoudh,Cvqycu,Gfkjgd
+Thursday,10:00,Njylev,Lfoudh,Cqdhfa,Gfkjgd
+Thursday,08:00,Ntdvbh,Lspyfj,Cdhhsb,Gbabua
+Thursday,10:00,Ntdvbh,Lspyfj,Cdhhsb,Gbabua
+Thursday,12:00,Njylev,Lspyfj,Cibdfp,Glammu
+Thursday,10:00,Ntdvbh,Lspyfj,Cibdfp,Glammu
+Thursday,12:00,Njylev,Lspyfj,Cgjayw,Gyrqrr
+Thursday,12:00,Ntdvbh,Lspyfj,Cgjayw,Gbabua
+Thursday,08:00,Ntdvbh,Lfoudh,Cgudou,Glammu
+Thursday,12:00,Neerve,Lfoudh,Cgudou,Gbabua
+Thursday,08:00,Neerve,Lfoudh,Cvqycu,Gyrqrr

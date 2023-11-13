@@ -1,5 +1,7 @@
 import csv
 import random
+import string
+import time
 
 
 class Group:
@@ -68,8 +70,18 @@ class ScheduleGenerator:
         for lesson_key, info in lessons_info.items():
             for other_lesson_key, other_info in lessons_info.items():
                 if lesson_key != other_lesson_key:
-                    if (info['Classroom'] == other_info['Classroom'] and
-                            info['Teacher'] == other_info['Teacher']):
+                    day, time = lesson_key.split("_")[-2:]
+                    other_day, other_time = other_lesson_key.split("_")[-2:]
+                    if (
+                            (info['Classroom'] == other_info['Classroom'] and
+                             day == other_day and time == other_time) or
+                            (info['Teacher'] == other_info['Teacher'] and
+                             day == other_day and time == other_time) or
+                            (lesson_key.split("_")[0] == other_lesson_key.split("_")[0] and
+                             day == other_day and time == other_time) or
+                            (lesson_key.split("_")[1] == other_lesson_key.split("_")[1] and
+                             day == other_day and time == other_time)
+                    ):
                         conflicts += 1
 
         return 1 / (1 + conflicts)
@@ -106,7 +118,7 @@ class ScheduleGenerator:
             population = parents + offspring
 
             best_schedule = max(population, key=lambda x: self.fitness(x))
-            print(f"Generation {generation + 1}, Fitness: {self.fitness(best_schedule)}")
+            # print(f"Generation {generation + 1}, Fitness: {self.fitness(best_schedule)}")
 
         return best_schedule
 
@@ -153,20 +165,41 @@ for day in days_of_week:
     for hour in range(8, 18, 2):
         timeslots.append(TimeSlot(day, f"{hour:02d}:00", hour <= 12))
 
+
 # Создаем генератор расписания
-schedule_generator = ScheduleGenerator(courses=[course1, course2, course3, course4, course5, course6, course7, course8],
-                                       classrooms=[classroom1, classroom2, classroom3, classroom4, classroom5,
-                                                   classroom6],
-                                       timeslots=timeslots)
+# schedule_generator = ScheduleGenerator(courses=[course1, course2, course3, course4, course5, course6, course7, course8],
+#                                        classrooms=[classroom1, classroom2, classroom3, classroom4, classroom5,
+#                                                    classroom6],
+#                                        timeslots=timeslots)
+# Рандомное расписание
+
+def randomword(length):
+    letters = string.ascii_lowercase
+    return ''.join(random.choice(letters) for _ in range(length))
+
+
+groups = [Group("G" + randomword(5)) for i in range(5)]
+teachers = [Teacher("L" + randomword(5)) for i in range(5)]
+courses = [Course("C" + randomword(5), random.choice(teachers),
+                  [random.choice(groups) for _ in range(random.randint(2, 5))],
+                  random.randint(1, 3)) for i in range(10)]
+classes = [Classroom("N" + randomword(5)) for i in range(5)]
+
+schedule_generator = ScheduleGenerator(courses=courses, classrooms=classes, timeslots=timeslots)
 
 # Запуск генетического алгоритма
-best_schedule = schedule_generator.genetic_algorithm(population_size=20, generations=100)
+
+start_time = time.time()
+best_schedule = schedule_generator.genetic_algorithm(population_size=30, generations=1000)
+print(f"--- {time.time() - start_time} seconds ---")
+print(f"fitness: {schedule_generator.fitness(best_schedule)}")
+
 
 # Вывод лучшего расписания
-print("\nBest Schedule:")
-for lesson_key, info in best_schedule.items():
-    if isinstance(info, dict):
-        print(f"{lesson_key}: {info}")
+# print("\nBest Schedule:")
+# for lesson_key, info in best_schedule.items():
+#     if isinstance(info, dict):
+#         print(f"{lesson_key}: {info}")
 
 
 # Функция для записи расписания в CSV-файл
@@ -238,10 +271,10 @@ def write_schedule_to_csv(schedule, output_file):
                 for element in grouped_schedule[groupName][day]:
                     writer.writerow(
                         (day,
-                        element[0],
-                        element[1],
-                        element[2],
-                        element[3])
+                         element[0],
+                         element[1],
+                         element[2],
+                         element[3])
                     )
 
     teachered_schedule = {}
@@ -263,12 +296,11 @@ def write_schedule_to_csv(schedule, output_file):
                 for element in teachered_schedule[teacherName][day]:
                     writer.writerow(
                         (day,
-                        element[0],
-                        element[1],
-                        element[2],
-                        element[3])
+                         element[0],
+                         element[1],
+                         element[2],
+                         element[3])
                     )
-
 
 
 # Записываем лучшее расписание в CSV-файл
